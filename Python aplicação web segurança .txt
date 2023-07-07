@@ -1,0 +1,71 @@
+Python aplicação web segurança 
+
+import requests
+
+# Função para verificar a segurança de uma URL
+def check_web_security(url):
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            print("Acesso bem-sucedido à URL.")
+            # Verificar outras questões de segurança aqui
+            # Exemplo: verificar o cabeçalho de segurança, analisar o conteúdo em busca de vulnerabilidades conhecidas, etc.
+        else:
+            print("A URL retornou um código de status inválido.")
+    except requests.exceptions.RequestException as e:
+        print("Ocorreu um erro ao acessar a URL:", str(e))
+
+# Exemplo de uso
+url = 'https://www.example.com'
+check_web_security(url)
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
+import requests
+from bs4 import BeautifulSoup
+import re
+
+# Função para verificar a segurança de uma URL
+def check_web_security(url):
+    try:
+        # Fazendo solicitação HTTP GET
+        response = requests.get(url)
+        if response.status_code == 200:
+            print("Acesso bem-sucedido à URL.")
+
+            # Verificar o cabeçalho de segurança
+            headers = response.headers
+            if 'X-Frame-Options' in headers:
+                print(f'Cabeçalho X-Frame-Options: {headers["X-Frame-Options"]}')
+            if 'Content-Security-Policy' in headers:
+                print(f'Cabeçalho Content-Security-Policy: {headers["Content-Security-Policy"]}')
+            # Adicione mais verificações de cabeçalhos de segurança conforme necessário
+
+            # Analisar o conteúdo HTML em busca de vulnerabilidades conhecidas
+            soup = BeautifulSoup(response.content, 'html.parser')
+
+            # Verificar a presença de scripts externos
+            script_tags = soup.find_all('script', src=True)
+            for tag in script_tags:
+                print(f'Script externo encontrado: {tag["src"]}')
+
+            # Verificar formulários e campos de entrada
+            form_tags = soup.find_all('form')
+            for form in form_tags:
+                print('Formulário encontrado:')
+                print(f'Action: {form.get("action")}')
+                input_tags = form.find_all('input')
+                for input_tag in input_tags:
+                    print(f'Campo de entrada: {input_tag.get("name")} - Tipo: {input_tag.get("type")}')
+
+            # Adicione mais verificações personalizadas conforme necessário
+
+        else:
+            print("A URL retornou um código de status inválido.")
+    except requests.exceptions.RequestException as e:
+        print("Ocorreu um erro ao acessar a URL:", str(e))
+
+# Exemplo de uso
+url = 'https://www.example.com'
+check_web_security(url)
